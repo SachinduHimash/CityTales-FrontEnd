@@ -26,7 +26,7 @@ export default function ARView() {
   const [previewImage, setPreviewImage] = useState('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
 
-  console.log(process.env.REACT_APP_BASE_URL)
+
 
   const handlePreview = async (file: UploadFile) => {
     if (!file.url && !file.preview) {
@@ -48,7 +48,16 @@ export default function ARView() {
 
   const handleCreate = async () => {
     try {
-      await axios.post(`${process.env.REACT_APP_BASE_URL}/upload`, { story });
+      const formData:any = new FormData();
+      formData.append("story",story)
+      formData.append("photo", fileList[0].originFileObj);
+      await axios.post(`${process.env.REACT_APP_BASE_URL}/upload`,formData,
+        {   
+            headers:{
+                "Content-Type":"multipart/form-data"
+            }
+        }
+      );
       alert('Data created successfully!');
       // Optionally, fetch and update the displayed data
     } catch (error) {
@@ -61,6 +70,8 @@ export default function ARView() {
       <Upload
         action="https://660d2bd96ddfa2943b33731c.mockapi.io/api/upload"
         listType="picture-card"
+        multiple={true}
+        beforeUpload={() => false}
         fileList={fileList}
         onPreview={handlePreview}
         onChange={handleChange}
